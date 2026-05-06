@@ -407,6 +407,7 @@ Resources:
           - Key: Environment
             Value: !Ref ProjectName
 
+
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn: NatGateway
@@ -415,9 +416,9 @@ Resources:
       LaunchTemplate:
         LaunchTemplateId: !Ref LaunchTemplate
         Version: !GetAtt LaunchTemplate.LatestVersionNumber
-      MinSize: !Ref AsgMinSize
-      DesiredCapacity: !Ref AsgDesiredSize
-      MaxSize: !Ref AsgMaxSize
+      MinSize: !Ref MinInstances
+      DesiredCapacity: !Ref  DesiredInstances
+      MaxSize: !Ref MaxInstances 
       VPCZoneIdentifier:
       - !Ref PrivateSubnet1
       - !Ref PrivateSubnet2
@@ -441,6 +442,7 @@ Resources:
         TargetValue: !Ref CpuScaleOutThreshold
         # Scale-in is enabled by default; comment out the line below to disable
         DisableScaleIn: false
+
 
 Outputs:
 
