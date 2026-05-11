@@ -299,7 +299,6 @@ Resources:
           Arn: !GetAtt Ec2InstanceProfile.Arn
         SecurityGroupIds:
         - !Ref Ec2SecurityGroup
-        # No KeyName – no SSH access as required
         UserData:
           Fn::Base64: !Sub |
             #!/bin/bash
@@ -332,7 +331,7 @@ Resources:
                 td:first-child { font-weight: 600; color: #555; width: 150px; }
                 .stress-btn {
                   display: inline-block; margin-top: 20px; padding: 14px 32px;
-                  background: #e74c3c; color: white; border: none; border-radius: 8px;
+                  background: #2980b9; color: white; border: none; border-radius: 8px;
                   font-size: 16px; cursor: pointer; text-decoration: none;
                 }
                 .stress-btn:hover { background: #c0392b; }
@@ -424,8 +423,8 @@ Resources:
       - !Ref PrivateSubnet2
       TargetGroupARNs:
       - !Ref AlbTargetGroup
-      HealthCheckType: ELB
-      HealthCheckGracePeriod: 300
+      HealthCheckType: ELB # Use ALB health checks to determine instance health and trigger replacements
+      HealthCheckGracePeriod: 300 # 5 minutes to allow app to start before health checks
       Tags:
       - Key: Name
         Value: !Sub ${ProjectName}-asg
