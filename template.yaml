@@ -146,20 +146,13 @@ Resources:
       SubnetId: !Ref PublicSubnet2
       RouteTableId: !Ref PublicRouteTable
 
-  NatEIP:
-    Type: AWS::EC2::EIP
-    DependsOn: VPCGatewayAttachment
-    Properties:
-      Domain: vpc
-      Tags:
-      - Key: Name
-        Value: !Sub ${ProjectName}-nat-eip
 
   NatGateway:
     Type: AWS::EC2::NatGateway
     Properties:
-      AllocationId: !GetAtt NatEIP.AllocationId
-      SubnetId: !Ref PublicSubnet1
+      ConnectivityType: public
+      AvailabilityMode: regional
+      VpcId: !Ref VPC
       Tags:
       - Key: Name
         Value: !Sub ${ProjectName}-nat-gw
@@ -266,7 +259,7 @@ Resources:
       - Type: forward
         TargetGroupArn: !Ref AlbTargetGroup
 
-  # Allows console access without SSH if needed for debugging
+
   Ec2InstanceRole:
     Type: AWS::IAM::Role
     Properties:
