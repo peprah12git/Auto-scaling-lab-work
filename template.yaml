@@ -134,6 +134,7 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
 
+# link public subnets to IGW route table
   PublicSubnet1RouteAssoc:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -146,16 +147,21 @@ Resources:
       SubnetId: !Ref PublicSubnet2
       RouteTableId: !Ref PublicRouteTable
 
+  ElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
 
   NatGateway:
     Type: AWS::EC2::NatGateway
     Properties:
       ConnectivityType: public
-      AvailabilityMode: regional
-      VpcId: !Ref VPC
+      AllocationId: !GetAtt ElasticIP.AllocationId
+      SubnetId: !Ref PublicSubnet1
       Tags:
       - Key: Name
         Value: !Sub ${ProjectName}-nat-gw
+   
 
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
@@ -274,6 +280,7 @@ Resources:
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
 
+  # Instance Profile to attach the role to EC2 instances
   Ec2InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
@@ -432,7 +439,6 @@ Resources:
         PredefinedMetricSpecification:
           PredefinedMetricType: ASGAverageCPUUtilization
         TargetValue: !Ref CpuScaleOutThreshold
-        # Scale-in is enabled by default; comment out the line below to disable
         DisableScaleIn: false
 
 
